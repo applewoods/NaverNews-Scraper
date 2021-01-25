@@ -1,0 +1,1 @@
+from .NaverNewsScraper import scraper
