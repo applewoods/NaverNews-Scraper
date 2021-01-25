@@ -7,8 +7,9 @@ setup(
     url = "https://github.com/applewoods/NaverNews-Scraper.git",
     author = "applewoods",
     install_requires = [
-        'pandas==1.1.3',
-        'beautifulsoup4==4.4.1',
-        'requests==2.24.0'
+        'pandas',
+        'bs4',
+        'requests',
+        'datetime'
     ]
 )
