@@ -50,9 +50,9 @@ class scraper:
                 # 네이버 뉴스 URL 추출
                 if "네이버뉴스" in info:
                     each_url  = URL[-1]
-                    NewsTitle, NewsContents = self.each_news_scraper(each_url)
+                    self.each_news_scraper(each_url)
 
-                self.__DATA.append([NewsTitle, NewsDate, NewsPress, NewsContents])
+                self.__DATA.append([self.__newstitle, NewsDate, NewsPress, self.__newscontents])
 
             if amount_news != self.__MAX_NEWS:
                 break
@@ -72,7 +72,8 @@ class scraper:
         # 뉴스 본문
         newscontents = soup.find(id = "articleBodyContents").text
 
-        return newstitle, newscontents
+        self.__newstitle = newstitle
+        self.__newscontents = newscontents
 
     def save(self):
         df = pd.DataFrame(data = self.__DATA, columns= self.__COLUMNS)
