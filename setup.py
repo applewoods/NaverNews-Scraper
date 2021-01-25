@@ -1,3 +1,4 @@
+import naver_news_scraper_lib
 from setuptools import setup
 
 setup(
