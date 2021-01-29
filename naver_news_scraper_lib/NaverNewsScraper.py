@@ -63,17 +63,22 @@ class scraper:
         self.save()
 
     def each_news_scraper(self, url):
-        news = requests.get(url, headers={"User-Agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"})
-        soup = BeautifulSoup(news.text, "html.parser")
+        try:
+            news = requests.get(url, headers={"User-Agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"})
+            soup = BeautifulSoup(news.text, "html.parser")
 
-        # 뉴스 제목
-        newstitle = soup.find(id = "articleTitle").text
+            # 뉴스 제목
+            newstitle = soup.find(id = "articleTitle").text
 
-        # 뉴스 본문
-        newscontents = soup.find(id = "articleBodyContents").text
+            # 뉴스 본문
+            newscontents = soup.find(id = "articleBodyContents").text
 
-        self.__newstitle = newstitle
-        self.__newscontents = newscontents
+            self.__newstitle = newstitle
+            self.__newscontents = newscontents
+            
+        except:
+            self.__newstitle = None
+            self.__newscontents = None
 
     def save(self):
         df = pd.DataFrame(data = self.__DATA, columns= self.__COLUMNS)
