@@ -15,7 +15,7 @@ class scraper:
 
         self.__start_page = 1
         self.__MAX_NEWS = 10
-        self.__COLUMNS = ["title", "date", "press", "contents"] 
+        self.__COLUMNS = ["title", "date", "press", "contents", "category"] 
         self.__DATA = []
 
     def naver_news_scraper(self):
@@ -32,7 +32,7 @@ class scraper:
                 # 뉴스에 관한 정보
                 Press = []
                 URL = []
-                info = html.find(class_ = "info_group")
+                info = an.find(class_ = "info_group")
                 
                 # 언론사
                 for press in info.find_all("a"):
@@ -52,10 +52,11 @@ class scraper:
                     each_url  = URL[-1]
                     self.each_news_scraper(each_url)
 
-                self.__DATA.append([self.__newstitle, NewsDate, NewsPress, self.__newscontents])
+                self.__DATA.append([self.__newstitle, NewsDate, NewsPress, self.__newscontents, self.__newscategory])
 
             if amount_news != self.__MAX_NEWS:
                 break
+                
             else:
                 self.__start_page += 1
         
@@ -63,22 +64,27 @@ class scraper:
         self.save()
 
     def each_news_scraper(self, url):
-        try:
             news = requests.get(url, headers={"User-Agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"})
             soup = BeautifulSoup(news.text, "html.parser")
 
-            # 뉴스 제목
-            newstitle = soup.find(id = "articleTitle").text
+            NewsCategory = []
+            for nc in soup.find_all(class_ = "blind"):
+                NewsCategory.append(nc.text)
 
-            # 뉴스 본문
-            newscontents = soup.find(id = "articleBodyContents").text
+            if "TV연예" not in NewsCategory:
+                newstitle = soup.find(id = "articleTitle").text             # 뉴스 제목
+                newscontents = soup.find(id = "articleBodyContents").text   # 뉴스 본문
+                newscategory = "news"                                       # 뉴스
+            
+            else:
+                newstitle = soup.find(class_ = "end_tit").text              # 뉴스 제목
+                newscontents = soup.find(class_ = "end_body_wrp").text      # 뉴스 본문
+                newscategory = "entertainment"                              # TV연예 
 
             self.__newstitle = newstitle
             self.__newscontents = newscontents
+            self.__newscategory = newscategory
             
-        except:
-            self.__newstitle = None
-            self.__newscontents = None
 
     def save(self):
         df = pd.DataFrame(data = self.__DATA, columns= self.__COLUMNS)
